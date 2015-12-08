@@ -1,6 +1,6 @@
 angular.module('bubbleCloud', [])
 
-.directive('bubbleCloud', function () {
+.directive('bubbleCloud', function ($window, $timeout) {
 
     return {
 
@@ -30,11 +30,11 @@ angular.module('bubbleCloud', [])
 
             // A function which takes a group name and returns the desired
             // fill color. Optional. The default is d3.scale.category20c()
-            fillColorFn: '@',
+            fillColorFn: '=',
 
             // A function which takes a group name and returns the desired
             // label color. Optional. The default is black.
-            labelColorFn: '@',
+            labelColorFn: '=',
 
             // A function which takes a data object and returns the tooltip
             // text. The default is to combine the label and the value.
@@ -49,10 +49,23 @@ angular.module('bubbleCloud', [])
 
         },
 
-        link: function (scope, element, attrs, ctrl) {
+        link: function (scope, element, attrs, ctrl) {  
+            
+            var w = angular.element($window);
+
+            var reload = function() {
+                scope.diameter = element[0].offsetWidth;
+                ctrl.init(element.find('svg'));
+                ctrl.renderChart();
+            };
+
+            w.bind("resize", reload);
+            $timeout(reload, 300);
 
             // Set size of element
-            element.css('height', scope.diameter + 'px');
+            element.css('height', '100%');
+
+            element.css('width', '100%');
 
             // Publish renderChart into the parent scope
             scope.renderChartFn = ctrl.renderChart;
@@ -62,11 +75,9 @@ angular.module('bubbleCloud', [])
                 scope.$watch('data', ctrl.renderChart, true);
             }
 
+            scope.diameter = element[0].offsetWidth;
             // Set up the controller
             ctrl.init(element.find('svg'));
-
-            // Render the chart
-            ctrl.renderChart();
         },
 
         template: '<svg id="mychart"></svg>',
@@ -77,7 +88,8 @@ angular.module('bubbleCloud', [])
 
 })
 
-.controller('chartController', function ($scope) {
+.controller('chartController', function ($scope) {  
+
 
     // Return a flattened array of objects of this form:
     //
@@ -119,7 +131,7 @@ angular.module('bubbleCloud', [])
         var diameter = parseInt($scope.diameter);
 
         svg_element
-            .attr('width', diameter)
+            .attr('width', "100%")
             .attr('height', diameter)
             .attr('class', 'bubble');
 
@@ -134,23 +146,19 @@ angular.module('bubbleCloud', [])
             .size([diameter, diameter])
             .padding(1.5);
 
-        if ($scope.fillColorFn) {
-            var fillColorFn = $scope.$parent[$scope.fillColorFn];
-            if (! _(fillColorFn).isFunction())
-                throw new Error('fill-color-fn attr must be a function in the parent scope');
-            $scope.fill_color_fn = fillColorFn;
-        } else {
-            $scope.fill_color_fn = d3.scale.category20c();
-        }
+        $scope.fill_color_fn = function (object){
+            var p = (object.value - object.lowestValue) / (object.biggestValue - object.lowestValue),
+                darker_green = 90,
+                lighter_green = 180;
 
-        if ($scope.labelColorFn) {
-            var labelColorFn = $scope.$parent[$scope.labelColorFn];
-            if (! _(labelColorFn).isFunction())
-                throw new Error('label-color-fn attr must be a function in the parent scope');
-            $scope.label_color_fn = labelColorFn;
-        } else {
-            $scope.label_color_fn = function () { return 'black'; };
-        }
+            var green = Math.floor(((1 - p) * (lighter_green - darker_green)) + darker_green);
+
+            var color = "rgb(50," + green + ",60)";
+
+            return color;
+        };
+        
+        $scope.label_color_fn = function () { return 'white'; };
 
         if ($scope.tooltipFormatFn) {
             var tooltipFormatFn = $scope.$parent[$scope.tooltipFormatFn];
@@ -181,6 +189,7 @@ angular.module('bubbleCloud', [])
         enter.append('text')
             .attr('dy', '.3em')
             .style('text-anchor', 'middle')
+            .style('font-size', '1vw')
 
         // Handle each node
 
@@ -192,7 +201,7 @@ angular.module('bubbleCloud', [])
         var tooltip_format_fn = $scope.tooltip_format_fn;
 
         node.attr('transform', function (datum) {
-            return 'translate(' + datum.x + ',' + datum.y + ')';
+            return 'translate(' + (datum.x) + ',' + datum.y + ')';
         });
 
         node.select('title')
@@ -209,16 +218,35 @@ angular.module('bubbleCloud', [])
                 return datum.r;
             })
             .style('fill', function (datum) {
-                return fill_color_fn(datum.group);
+                return fill_color_fn(datum.object);
             });
 
         node.select('text')
             .style('fill', function (datum) {
                 return label_color_fn(datum.group);
             })
-            .text(function (datum) {
-                var label = datum.object[labelAttr];
-                return label ? label.substring(0, datum.r / 3) : '';
+            .each(function(d) {
+                var label = d.object[labelAttr].split(" ");
+                console.log(label);
+                var textNode = d3.select(this);
+                textNode.selectAll("*").remove();
+                label.forEach(function(word, iterator){
+                    if(iterator == 0) {
+                        if(label.length == 1) {
+                            textNode.append("tspan").text(word).attr('x', 0).attr('dy', 5);
+                        } else {
+                            if(label.length > 2) {
+                                textNode.append("tspan").text(word).attr('x', 0).attr('dy', -18*(label.length - 2));
+                            } else {
+                                textNode.append("tspan").text(word).attr('x', 0).attr('dy', 0);
+                            }
+                            
+                        }
+                    } else {
+                        textNode.append("tspan").text(word).attr('x', 0).attr('dy', 18);
+                    }
+                    
+                });
             });
 
         // Handle removed nodes
