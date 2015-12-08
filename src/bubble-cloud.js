@@ -227,9 +227,9 @@ angular.module('bubbleCloud', [])
             })
             .each(function(d) {
                 var label = d.object[labelAttr].split(" ");
-                console.log(label);
                 var textNode = d3.select(this);
                 textNode.selectAll("*").remove();
+                console.log(label);
                 label.forEach(function(word, iterator){
                     if(iterator == 0) {
                         if(label.length == 1) {
