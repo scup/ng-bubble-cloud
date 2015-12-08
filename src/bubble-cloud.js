@@ -62,10 +62,6 @@ angular.module('bubbleCloud', [])
             w.bind("resize", reload);
             $timeout(reload, 300);
 
-            // Set size of element
-            element.css('height', '100%');
-
-            element.css('width', '100%');
 
             // Publish renderChart into the parent scope
             scope.renderChartFn = ctrl.renderChart;
@@ -146,26 +142,18 @@ angular.module('bubbleCloud', [])
             .size([diameter, diameter])
             .padding(1.5);
 
-        $scope.fill_color_fn = function (object){
-            var p = (object.value - object.lowestValue) / (object.biggestValue - object.lowestValue),
-                darker_green = 90,
-                lighter_green = 180;
-
-            var green = Math.floor(((1 - p) * (lighter_green - darker_green)) + darker_green);
-
-            var color = "rgb(50," + green + ",60)";
+        $scope.fill_color_fn = function (object) {
+            var color = object.color;
 
             return color;
         };
         
         $scope.label_color_fn = function () { return 'white'; };
 
-        if ($scope.tooltipFormatFn) {
-            var tooltipFormatFn = $scope.$parent[$scope.tooltipFormatFn];
-            if (! _(tooltipFormatFn).isFunction())
-                throw new Error('tool-tip-format-fn attr must be a function in the parent scope');
-            $scope.tooltip_format_fn = tooltipFormatFn;
+        $scope.tooltip_format_fn =  function (datum) {
+            return datum.object.value;
         }
+        
     };
 
     // Get the latest data and render the chart
@@ -189,7 +177,6 @@ angular.module('bubbleCloud', [])
         enter.append('text')
             .attr('dy', '.3em')
             .style('text-anchor', 'middle')
-            .style('font-size', '1vw')
 
         // Handle each node
 
@@ -229,21 +216,21 @@ angular.module('bubbleCloud', [])
                 var label = d.object[labelAttr].split(" ");
                 var textNode = d3.select(this);
                 textNode.selectAll("*").remove();
-                console.log(label);
+               
                 label.forEach(function(word, iterator){
                     if(iterator == 0) {
                         if(label.length == 1) {
-                            textNode.append("tspan").text(word).attr('x', 0).attr('dy', 5);
+                            textNode.append("tspan").text(word).attr('x', 0).attr('dy', 5).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
                         } else {
                             if(label.length > 2) {
-                                textNode.append("tspan").text(word).attr('x', 0).attr('dy', -18*(label.length - 2));
+                                textNode.append("tspan").text(word).attr('x', 0).attr('dy', -18*(label.length - 2)).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
                             } else {
-                                textNode.append("tspan").text(word).attr('x', 0).attr('dy', 0);
+                                textNode.append("tspan").text(word).attr('x', 0).attr('dy', 0).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
                             }
                             
                         }
                     } else {
-                        textNode.append("tspan").text(word).attr('x', 0).attr('dy', 18);
+                        textNode.append("tspan").text(word).attr('x', 0).attr('dy', 18).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
                     }
                     
                 });
