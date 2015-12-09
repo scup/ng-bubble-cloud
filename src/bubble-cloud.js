@@ -94,7 +94,7 @@ angular.module('bubbleCloud', [])
 
 })
 
-.controller('chartController', function ($scope) {  
+.controller('chartController', function ($scope, $filter) {  
 
 
     // Return a flattened array of objects of this form:
@@ -161,7 +161,7 @@ angular.module('bubbleCloud', [])
         $scope.label_color_fn = function () { return 'white'; };
 
         $scope.tooltip_format_fn =  function (datum) {
-            return datum.object.value;
+            return $filter('number')(datum.object.value);
         }
         
     };
@@ -186,7 +186,7 @@ angular.module('bubbleCloud', [])
         enter.append('circle');
         enter.append('text')
             .attr('dy', '.3em')
-            .style('text-anchor', 'middle')
+            .style('text-anchor', 'middle');   
 
         // Handle each node
 
