@@ -54,7 +54,12 @@ angular.module('bubbleCloud', [])
             var w = angular.element($window);
 
             var reload = function() {
-                scope.diameter = element[0].offsetWidth;
+                if(element[0].offsetWidth < element[0].offsetHeight) {
+                    scope.diameter = element[0].offsetWidth;
+                } else {
+                    scope.diameter = element[0].offsetHeight;
+                }
+                
                 ctrl.init(element.find('svg'));
                 ctrl.renderChart();
             };
@@ -71,7 +76,12 @@ angular.module('bubbleCloud', [])
                 scope.$watch('data', ctrl.renderChart, true);
             }
 
-            scope.diameter = element[0].offsetWidth;
+            if(element[0].offsetWidth < element[0].offsetHeight) {
+                scope.diameter = element[0].offsetWidth;
+            } else {
+                scope.diameter = element[0].offsetHeight;
+            }
+
             // Set up the controller
             ctrl.init(element.find('svg'));
         },
@@ -223,14 +233,14 @@ angular.module('bubbleCloud', [])
                             textNode.append("tspan").text(word).attr('x', 0).attr('dy', 5).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
                         } else {
                             if(label.length > 2) {
-                                textNode.append("tspan").text(word).attr('x', 0).attr('dy', -18*(label.length - 2)).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
+                                textNode.append("tspan").text(word).attr('x', 0).attr('dy', -10*(label.length - 2)).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
                             } else {
                                 textNode.append("tspan").text(word).attr('x', 0).attr('dy', 0).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
                             }
                             
                         }
                     } else {
-                        textNode.append("tspan").text(word).attr('x', 0).attr('dy', 18).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
+                        textNode.append("tspan").text(word).attr('x', 0).attr('dy', 10).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
                     }
                     
                 });
