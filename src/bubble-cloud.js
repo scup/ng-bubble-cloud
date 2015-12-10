@@ -62,7 +62,23 @@ angular.module('bubbleCloud', [])
                 
                 ctrl.init(element.find('svg'));
                 ctrl.renderChart();
+
+                if(element[0].offsetWidth > element[0].offsetHeight) {
+                    ctrl.FontModifier = "h";
+                    ctrl.FontSizeMultiplier = 1;
+                } else {
+                    ctrl.FontModifier = "w";
+                    ctrl.FontSizeMultiplier = 0.5;
+                }
             };
+
+            if(element[0].offsetWidth > element[0].offsetHeight) {
+                ctrl.FontModifier = "h";
+                ctrl.FontSizeMultiplier = 1;
+            } else {
+                ctrl.FontModifier = "w";
+                ctrl.FontSizeMultiplier = 0.5;
+            }
 
             w.bind("resize", reload);
             $timeout(reload, 300);
@@ -209,6 +225,8 @@ angular.module('bubbleCloud', [])
 
     // Get the latest data and render the chart
     this.renderChart = function () {
+        
+        var self = this;
 
         // Get the latest data
 
@@ -268,13 +286,13 @@ angular.module('bubbleCloud', [])
                 var label = d.object[labelAttr].split(' ');
                 var textNode = d3.select(this);
                 textNode.selectAll('*').remove();
-               
+                
                 label.forEach(function(word, iterator) {
                     var tspan = textNode.append('tspan')
                         .text(word)
                         .attr('x', 0)
                         .style('font-size', function() {
-                            return (d.object.value/d.object.biggestValue + 0.5) + 'vw';
+                            return (d.object.value/d.object.biggestValue + self.FontSizeMultiplier) + 'v'+ self.FontModifier;
                         });
 
                     tspan.attr('dy', '1.1em');
