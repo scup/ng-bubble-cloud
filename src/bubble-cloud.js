@@ -114,7 +114,7 @@ angular.module('bubbleCloud', [])
                 tooltip = document.createElement('div');
                 document.body.appendChild(tooltip);
                 tooltip.className = 'tooltip -' + colorsEnum[datum.object.color];
-                tooltip.innerHTML = datum.value;
+                tooltip.innerHTML = $filter('number')(datum.value);;
                 tooltip.style.position = 'fixed';
                 tooltip.style.top = d3.event.pageY + 'px';
                 tooltip.style.left = (d3.event.pageX - tooltip.offsetWidth / 2) + 'px';
@@ -204,10 +204,6 @@ angular.module('bubbleCloud', [])
         };
         
         $scope.label_color_fn = function () { return 'white'; };
-
-        $scope.tooltip_format_fn =  function (datum) {
-            return $filter('number')(datum.object.value);
-        }
         
     };
 
