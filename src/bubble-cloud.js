@@ -137,8 +137,13 @@ angular.module('bubbleCloud', [])
         var diameter = parseInt($scope.diameter);
 
         svg_element
-            .attr('width', "100%")
+            .attr('width', diameter)
             .attr('height', diameter)
+            .css('position', 'absolute')
+            .css('top', '50%')
+            .css('left', '50%')
+            .css('margin-top', (-1 * diameter / 2) + 'px')
+            .css('margin-left', (-1 * diameter / 2) + 'px')
             .attr('class', 'bubble')
             .attr('preserveAspectRatio', 'xMidYMid meet');
 
@@ -232,7 +237,9 @@ angular.module('bubbleCloud', [])
                     var tspan = textNode.append('tspan')
                         .text(word)
                         .attr('x', 0)
-                        .style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
+                        .style('font-size', function() {
+                            return (d.object.value/d.object.biggestValue + 0.5) + 'vw';
+                        });
 
                     tspan.attr('dy', '1.1em');
                 });
