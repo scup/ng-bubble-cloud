@@ -94,7 +94,46 @@ angular.module('bubbleCloud', [])
 
 })
 
-.controller('chartController', function ($scope, $filter) {  
+.controller('chartController', function ($scope, $filter) {
+
+    var tooltip;
+
+    function addTooltipOnElement(element) {
+        element
+            .on('mouseover', function(datum) {
+                var colorsEnum = {
+                    "#81C784": 'lighter-green',
+                    "#66BB6A": 'light-green',
+                    "#4CAF50": 'medium-green',
+                    "#388E3C": 'dark-green',
+                    "#1B5E20": 'darker-green'
+                };
+                if (tooltip) {
+                    return;
+                }
+                tooltip = document.createElement('div');
+                document.body.appendChild(tooltip);
+                tooltip.className = 'tooltip -' + colorsEnum[datum.object.color];
+                tooltip.innerHTML = datum.value;
+                tooltip.style.position = 'fixed';
+                tooltip.style.top = d3.event.pageY + 'px';
+                tooltip.style.left = (d3.event.pageX - tooltip.offsetWidth / 2) + 'px';
+            })
+            .on('mouseout', function() {
+                if (!tooltip) {
+                    return;
+                }
+                tooltip.remove();
+                tooltip = null;
+            })
+            .on('mousemove', function() {
+                if (!tooltip) {
+                    return;
+                }
+                tooltip.style.top = d3.event.pageY + 'px';
+                tooltip.style.left = (d3.event.pageX - tooltip.offsetWidth / 2) + 'px';
+            });
+    }
 
 
     // Return a flattened array of objects of this form:
@@ -188,7 +227,6 @@ angular.module('bubbleCloud', [])
 
         var enter = node.enter().append('g')
             .attr('class', 'node');
-        enter.append('title');
         enter.append('circle');
         enter.append('text')
             .attr('dy', '.3em')
@@ -215,8 +253,8 @@ angular.module('bubbleCloud', [])
                     return datum.object[labelAttr] + ': ' + d3.format(',d')(datum.object[valueAttr]);
                 }
             });
-
-        node.select('circle')
+            
+        var circles = node.select('circle')
             .attr('r', function (datum) {
                 return datum.r;
             })
@@ -224,7 +262,9 @@ angular.module('bubbleCloud', [])
                 return fill_color_fn(datum.object);
             });
 
-        node.select('text')
+        addTooltipOnElement(circles);
+
+       var texts = node.select('text')
             .style('fill', function (datum) {
                 return label_color_fn(datum.group);
             })
@@ -248,6 +288,8 @@ angular.module('bubbleCloud', [])
                         return (-1 * (this.offsetHeight / 2));
                     });
             });
+
+        addTooltipOnElement(texts);
 
         // Handle removed nodes
 
