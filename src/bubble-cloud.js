@@ -21,9 +21,6 @@ angular.module('bubbleCloud', [])
             // The attribute containing a data object's label (optional)
             labelAttr: '@',
 
-            // The attribute containing a data object's label (optional)
-            labelAttr: '@',
-
             // The attribute containing a data object's group
             // (required if data is an array)
             groupAttr: '@',
@@ -130,7 +127,7 @@ angular.module('bubbleCloud', [])
                 tooltip = document.createElement('div');
                 document.body.appendChild(tooltip);
                 tooltip.className = 'tooltip -' + colorsEnum[datum.object.color];
-                tooltip.innerHTML = $filter('number')(datum.value);;
+                tooltip.innerHTML = $filter('number')(datum.value);
                 tooltip.style.position = 'fixed';
                 tooltip.style.top = d3.event.pageY + 'px';
                 tooltip.style.left = (d3.event.pageX - tooltip.offsetWidth / 2) + 'px';
@@ -286,7 +283,7 @@ angular.module('bubbleCloud', [])
                 var label = d.object[labelAttr].split(' ');
                 var textNode = d3.select(this);
                 textNode.selectAll('*').remove();
-                
+
                 label.forEach(function(word, iterator) {
                     var tspan = textNode.append('tspan')
                         .text(word)
