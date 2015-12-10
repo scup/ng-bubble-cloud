@@ -139,7 +139,8 @@ angular.module('bubbleCloud', [])
         svg_element
             .attr('width', "100%")
             .attr('height', diameter)
-            .attr('class', 'bubble');
+            .attr('class', 'bubble')
+            .attr('preserveAspectRatio', 'xMidYMid meet');
 
         $scope.selection = d3.selectAll(svg_element);
 
@@ -223,27 +224,22 @@ angular.module('bubbleCloud', [])
                 return label_color_fn(datum.group);
             })
             .each(function(d) {
-                var label = d.object[labelAttr].split(" ");
+                var label = d.object[labelAttr].split(' ');
                 var textNode = d3.select(this);
-                textNode.selectAll("*").remove();
+                textNode.selectAll('*').remove();
                
-                label.forEach(function(word, iterator){
-                    if(iterator == 0) {
-                        if(label.length == 1) {
-                            textNode.append("tspan").text(word).attr('x', 0).attr('dy', 5).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
-                        } else {
-                            if(label.length > 2) {
-                                textNode.append("tspan").text(word).attr('x', 0).attr('dy', -10*(label.length - 2)).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
-                            } else {
-                                textNode.append("tspan").text(word).attr('x', 0).attr('dy', 0).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
-                            }
-                            
-                        }
-                    } else {
-                        textNode.append("tspan").text(word).attr('x', 0).attr('dy', 10).style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
-                    }
-                    
+                label.forEach(function(word, iterator) {
+                    var tspan = textNode.append('tspan')
+                        .text(word)
+                        .attr('x', 0)
+                        .style('font-size', (d.object.value/d.object.biggestValue + 0.5) + 'vw');
+
+                    tspan.attr('dy', '1.1em');
                 });
+                textNode
+                    .attr('y', function() {
+                        return (-1 * (this.offsetHeight / 2));
+                    });
             });
 
         // Handle removed nodes
@@ -251,6 +247,4 @@ angular.module('bubbleCloud', [])
         node.exit().remove();
     };
 
-})
-
-;
+});
