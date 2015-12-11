@@ -269,6 +269,8 @@ angular.module('bubbleCloud', [])
             .attr('r', function (datum) {
                 return datum.r;
             })
+            .attr('stroke', 'white')
+            .attr('stroke-width', '3')
             .style('fill', function (datum) {
                 return fill_color_fn(datum.object);
             });
