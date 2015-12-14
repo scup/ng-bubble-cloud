@@ -86,7 +86,7 @@ angular.module('bubbleCloud', [])
 
             // Watch the data, if desired
             if (scope.watch === 'true') {
-                scope.$watch('data', ctrl.renderChart, true);
+                scope.$watch('data', reload, true);
             }
 
             if(element[0].offsetWidth < element[0].offsetHeight) {
