@@ -115,18 +115,18 @@ angular.module('bubbleCloud', [])
         element
             .on('mouseover', function(datum) {
                 var colorsEnum = {
-                    "#81C784": 'lighter-green',
-                    "#66BB6A": 'light-green',
-                    "#4CAF50": 'medium-green',
-                    "#388E3C": 'dark-green',
-                    "#1B5E20": 'darker-green'
+                    "#b6e8c7": 'lighter-green',
+                    "#80e09d": 'light-green',
+                    "#4ad872": 'medium-green',
+                    "#45a764": 'dark-green',
+                    "#407657": 'darker-green'
                 };
                 if (tooltip) {
                     return;
                 }
                 tooltip = document.createElement('div');
                 document.body.appendChild(tooltip);
-                tooltip.className = 'tooltip -' + colorsEnum[datum.object.color];
+                tooltip.className = 'tooltip -' + colorsEnum[datum.object.color.circle];
                 tooltip.innerHTML = $filter('number')(datum.value);
                 tooltip.style.position = 'fixed';
                 tooltip.style.top = d3.event.pageY + 'px';
