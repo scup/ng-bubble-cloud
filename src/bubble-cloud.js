@@ -297,7 +297,7 @@ angular.module('bubbleCloud', [])
                     tspan.attr('dy', '1.1em');
                 });
                 textNode
-                    .attr('y', function() {console.log(d3.select(this));
+                    .attr('y', function() {
                         return (-1 * (this.getBBox().height / 2));
                     });
             });
